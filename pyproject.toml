@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "odplate-analysis"
+version = "1.0.3"
+description = "Análisis reproducible y extensible de densidad óptica en microplacas"
+readme = "README.md"
+requires-python = ">=3.10"
+
+authors = [
+    { name = "Dr. Miguel Ángel Álvarez Carmona" }
+]
+
+dependencies = [
+    "numpy>=2.0",
+    "pandas>=2.2",
+    "scipy>=1.16",
+    "matplotlib>=3.10",
+
+    # Manejo de archivos
+    "openpyxl>=3.1",
+    "python-docx>=1.1",
+]
+
+[project.optional-dependencies]
+
+# Interfaz gráfica del diseñador de placas
+gui = [
+    "ipywidgets>=7.7,<8"
+]
+
+# Métodos estadísticos avanzados
+statistics = [
+    "statsmodels>=0.14"
+]
+
+# Desarrollo y pruebas
+test = [
+    "pytest>=8.0"
+]
+
+# Instalación completa
+all = [
+    "ipywidgets>=7.7,<8",
+    "statsmodels>=0.14",
+    "pytest>=8.0"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
