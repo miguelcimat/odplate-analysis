@@ -18,6 +18,9 @@ from .reporting import (
     generar_html,
     generar_docx,
     generar_pdf_desde_docx,
+)
+
+from .reporting.matrices import (
     exportar_matrices_por_id,
     exportar_series_por_grupo,
 )
