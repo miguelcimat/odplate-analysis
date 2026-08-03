@@ -770,7 +770,7 @@ def construir_tablas_series_por_grupo(
         )
     }
 
-    def ordenar_tabla(
+        def ordenar_tabla(
         dataframe: pd.DataFrame,
     ) -> pd.DataFrame:
 
@@ -797,7 +797,7 @@ def construir_tablas_series_por_grupo(
         columnas_tiempos = [
             columna
             for columna in dataframe.columns
-            if columna.startswith("ID ")
+            if str(columna).startswith("ID ")
         ]
 
         return dataframe[
@@ -808,12 +808,40 @@ def construir_tablas_series_por_grupo(
     df_formateada = ordenar_tabla(
         df_formateada
     )
+
     df_medias = ordenar_tabla(
         df_medias
     )
+
     df_std = ordenar_tabla(
         df_std
     )
+
+    df_largo["_orden"] = df_largo[
+        "id_serie"
+    ].map(orden_series)
+
+    df_largo.sort_values(
+        by=[
+            "grupo",
+            "_orden",
+            "id_tiempo",
+        ],
+        na_position="last",
+        inplace=True,
+    )
+
+    df_largo.drop(
+        columns="_orden",
+        inplace=True,
+    )
+
+    return {
+        "Media_STD": df_formateada,
+        "Medias": df_medias,
+        "Desviaciones": df_std,
+        "Formato_largo": df_largo,
+    }
 
 
 def exportar_series_por_grupo(
