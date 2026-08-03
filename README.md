@@ -1,4 +1,4 @@
-# ODPlate Analysis 1.0.3
+# ODPlate Analysis 1.0.4
 
 Biblioteca extensible para procesamiento, análisis, ranking, visualización y reporte de experimentos de densidad óptica en microplacas.
 
