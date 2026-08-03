@@ -18,6 +18,8 @@ from .reporting import (
     generar_html,
     generar_docx,
     generar_pdf_desde_docx,
+    exportar_matrices_por_id,
+    exportar_series_por_grupo,
 )
 
 
@@ -290,11 +292,86 @@ class Experimento:
             filas.append(fila)
         self.tablas["Criterios_ranking"] = pd.DataFrame(filas)
 
+    
+    def exportar_datos_matrices(
+        self,
+        carpeta="datos_matrices",
+        orden_ids=None,
+        nombres_filas=None,
+        nombres_columnas=None,
+        decimales=4,
+        incluir_blanco=True,
+        tipo_series="todos",
+        incluir_ids=None,
+        excluir_ids=None,
+    ):
+        """
+        Genera los dos archivos detallados de matrices.
+
+        Archivos generados
+        ------------------
+        matrices_por_id.xlsx
+            Matrices de cada ID y del blanco.
+
+        series_por_grupo.xlsx
+            Series organizadas por grupo y por tiempo.
+        """
+
+        if self.matrices is None:
+            raise RuntimeError(
+                "Primero procese las matrices."
+            )
+
+        carpeta = Path(
+            carpeta
+        )
+        carpeta.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
+
+        ruta_matrices = exportar_matrices_por_id(
+            matrices=self.matrices,
+            ruta_excel=carpeta / "matrices_por_id.xlsx",
+            orden_ids=orden_ids,
+            nombres_filas=nombres_filas,
+            nombres_columnas=nombres_columnas,
+            decimales=decimales,
+            incluir_blanco=incluir_blanco,
+        )
+
+        ruta_series = exportar_series_por_grupo(
+            config=self.config,
+            matrices=self.matrices,
+            ruta_excel=carpeta / "series_por_grupo.xlsx",
+            tiempos=orden_ids,
+            tipo=tipo_series,
+            incluir_ids=incluir_ids,
+            excluir_ids=excluir_ids,
+            decimales=decimales,
+        )
+
+        return {
+            "matrices_por_id": ruta_matrices,
+            "series_por_grupo": ruta_series,
+        }
+    
+    
+    
     def generar_reporte(
         self,
         carpeta="reporte_od",
-        formatos=("xlsx", "html", "docx", "pdf", "csv"),
+        formatos=(
+            "xlsx",
+            "html",
+            "docx",
+            "pdf",
+            "csv",
+        ),
         titulo="Reporte de análisis OD",
+        incluir_matrices_detalladas=True,
+        orden_ids=None,
+        decimales_matrices=4,
     ):
         if not self.tablas:
             self.calcular_todo()
@@ -304,6 +381,15 @@ class Experimento:
         carpeta.mkdir(parents=True, exist_ok=True)
         guardar_configuracion(self.config, carpeta / "configuracion.json")
         salidas = {"configuracion": carpeta / "configuracion.json"}
+
+        if incluir_matrices_detalladas:
+            salidas["matrices_detalladas"] = (
+                self.exportar_datos_matrices(
+                    carpeta=carpeta / "matrices",
+                    orden_ids=orden_ids,
+                    decimales=decimales_matrices,
+                )
+            )
 
         if "xlsx" in formatos:
             salidas["xlsx"] = exportar_excel(
