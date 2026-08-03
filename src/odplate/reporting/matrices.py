@@ -770,7 +770,7 @@ def construir_tablas_series_por_grupo(
         )
     }
 
-        def ordenar_tabla(
+    def ordenar_tabla(
         dataframe: pd.DataFrame,
     ) -> pd.DataFrame:
 
