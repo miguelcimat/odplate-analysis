@@ -9,6 +9,13 @@ from .metrics.ranking import ranking, describir_criterio, DescripcionCriterio
 from .plotting import graficar
 from .plugins import registrar_metrica, registrar_modelo, registrar_grafica, registrar_criterio
 from .results import ResultadosProcesamiento, ResultadosMetricas, ResultadosModelos, ResultadoRanking
+from .matrices import (
+    obtener_ids_experimentales,
+    formatear_media_std,
+    exportar_matrices_por_id,
+    construir_tablas_series_por_grupo,
+    exportar_series_por_grupo,
+)
 try:
     from .designer import PlateDesigner, crear_disenador_placa
 except Exception:
