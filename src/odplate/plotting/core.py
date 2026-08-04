@@ -286,7 +286,6 @@ def _seleccionar_por_ranking(
     seleccion = [indice[id_] for id_ in orden if id_ in indice]
     return seleccion, etiqueta, tabla
 
-
 def graficar(
     config,
     matrices,
@@ -319,27 +318,28 @@ def graficar(
     leyenda_kwargs=None,
     guardar_en=None,
     mostrar=True,
-):    """
-    Grafica series con selección completamente controlada por el usuario.
+):    
+"""
+Grafica series con selección completamente controlada por el usuario.
 
-    Modos
-    -----
-    grupos:
-        Una figura por grupo.
-    todo:
-        Todas las series filtradas en una figura.
-    seleccion:
-        Solo las series indicadas mediante filtros o IDs.
-    ranking:
-        Selecciona ``top``, ``bottom`` o ``rango`` usando ``criterio``.
-    mejores:
-        Alias compatible de ``ranking`` con ``top=n_mejores``.
-    peores:
-        Alias de ``ranking`` con ``bottom`` o ``n_mejores``.
+Modos
+-----
+grupos:
+    Una figura por grupo.
+todo:
+    Todas las series filtradas en una figura.
+seleccion:
+    Solo las series indicadas mediante filtros o IDs.
+ranking:
+    Selecciona ``top``, ``bottom`` o ``rango`` usando ``criterio``.
+mejores:
+    Alias compatible de ``ranking`` con ``top=n_mejores``.
+peores:
+    Alias de ``ranking`` con ``bottom`` o ``n_mejores``.
 
-    No existe un criterio predeterminado: el usuario debe declarar qué
-    significa "mejor" o "peor".
-    """
+No existe un criterio predeterminado: el usuario debe declarar qué
+significa "mejor" o "peor".
+"""
     submatriz = config["submatriz"]
     items = filtrar_catalogo(
         config, aceites, grupos, incluir_ids, excluir_ids, None, tipo=tipo
