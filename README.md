@@ -155,3 +155,150 @@ Exportación de reportes
 ```
 
 Cada una de estas etapas puede ejecutarse de forma independiente o integrarse dentro de un flujo completamente automatizado.
+
+
+# Instalación
+
+ODPlate puede instalarse directamente desde GitHub o utilizarse en modo de desarrollo. La biblioteca es compatible con Python **3.10 o superior**.
+
+---
+
+## Requisitos
+
+Antes de instalar la biblioteca se recomienda disponer de:
+
+* Python 3.10 o superior.
+* pip actualizado.
+* Git (únicamente para instalar desde el repositorio).
+
+Puede comprobar la versión de Python mediante:
+
+```bash
+python --version
+```
+
+---
+
+## Instalación desde GitHub
+
+La forma más sencilla de instalar la versión estable es:
+
+```bash
+pip install git+https://github.com/miguelcimat/odplate-analysis.git
+```
+
+Este comando descargará automáticamente la versión más reciente disponible en la rama principal del repositorio.
+
+---
+
+## Instalación con todas las dependencias
+
+Si se desea utilizar todas las funcionalidades de la biblioteca (diseñador gráfico, generación de reportes, lectura de Excel, etc.), se recomienda instalar el paquete completo:
+
+```bash
+pip install "git+https://github.com/miguelcimat/odplate-analysis.git#egg=odplate-analysis[all]"
+```
+
+Las dependencias adicionales incluyen, entre otras:
+
+* ipywidgets
+* openpyxl
+* python-docx
+
+---
+
+## Instalación para desarrollo
+
+Si se desea modificar la biblioteca o contribuir al proyecto:
+
+```bash
+git clone https://github.com/miguelcimat/odplate-analysis.git
+
+cd odplate-analysis
+
+pip install -e ".[all]"
+```
+
+La opción `-e` (editable) permite que cualquier modificación realizada sobre el código fuente se refleje inmediatamente sin necesidad de reinstalar la biblioteca.
+
+---
+
+## Instalación en Google Colab
+
+ODPlate puede utilizarse directamente desde Google Colab.
+
+```python
+!pip install "git+https://github.com/miguelcimat/odplate-analysis.git#egg=odplate-analysis[all]"
+```
+
+Después de la instalación es recomendable reiniciar el entorno de ejecución para asegurar que todas las dependencias sean cargadas correctamente.
+
+---
+
+## Verificar la instalación
+
+Una vez instalada la biblioteca:
+
+```python
+import odplate
+
+print(odplate.__version__)
+```
+
+También es posible comprobar que la biblioteca se está importando desde la ubicación esperada:
+
+```python
+import odplate
+
+print(odplate.__file__)
+```
+
+Esto resulta especialmente útil cuando existen múltiples instalaciones de la biblioteca en el mismo sistema.
+
+---
+
+## Importación recomendada
+
+La forma recomendada de comenzar un proyecto es:
+
+```python
+from odplate import *
+```
+
+Aunque también es posible importar únicamente los componentes necesarios:
+
+```python
+from odplate import (
+    ExperimentoOD,
+    PlateDesigner,
+    calificacion_inversa
+)
+```
+
+Esta segunda opción suele ser preferible en proyectos grandes, ya que hace más explícitas las dependencias utilizadas.
+
+---
+
+## Estructura general del proyecto
+
+Una vez instalada, la biblioteca organiza sus componentes principales en los siguientes módulos:
+
+```text
+odplate
+│
+├── experiment
+├── designer
+├── io
+├── processing
+├── series
+├── metrics
+├── models
+├── plotting
+├── reporting
+├── ranking
+├── plugins
+└── results
+```
+
+Cada módulo está especializado en una etapa específica del análisis experimental, lo que facilita tanto el mantenimiento como la extensión de la biblioteca.
+
