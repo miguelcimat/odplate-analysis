@@ -302,3 +302,157 @@ odplate
 
 Cada módulo está especializado en una etapa específica del análisis experimental, lo que facilita tanto el mantenimiento como la extensión de la biblioteca.
 
+
+# Primer experimento (Quick Start)
+
+El flujo completo de trabajo en ODPlate consta de cinco etapas principales:
+
+```text
+Diseñar la placa
+      │
+      ▼
+Leer los archivos Excel
+      │
+      ▼
+Procesar las matrices
+      │
+      ▼
+Calcular métricas y modelos
+      │
+      ▼
+Generar gráficas y reportes
+```
+
+Cada una de estas etapas puede ejecutarse de forma independiente, aunque normalmente se utilizan de manera secuencial.
+
+## Paso 1. Crear el experimento
+
+El objeto principal de la biblioteca es `ExperimentoOD`.
+
+Puede construirse a partir de un archivo JSON generado por el diseñador de placas o directamente desde un diccionario de configuración.
+
+### Desde un archivo JSON
+
+```python
+from odplate import ExperimentoOD
+
+experimento = ExperimentoOD(
+    "configuracion_placa.json"
+)
+```
+
+### Desde un diccionario
+
+```python
+experimento = ExperimentoOD(configuracion)
+```
+
+Durante la construcción del objeto se valida automáticamente la configuración experimental.
+
+Si se detecta alguna inconsistencia (por ejemplo, series duplicadas o dimensiones incompatibles), la biblioteca genera una excepción indicando el problema encontrado.
+
+---
+
+## Paso 2. Leer los archivos de absorbancia
+
+Los archivos Excel pueden cargarse mediante:
+
+```python
+experimento.cargar_resultados(
+    ruta="Experimentos/Ecoli",
+    nombre_blanco="Blanco",
+)
+```
+
+La biblioteca leerá automáticamente todos los archivos contenidos en la carpeta indicada.
+
+---
+
+## Paso 3. Procesar las matrices
+
+```python
+experimento.procesar()
+```
+
+Durante esta etapa se realizan automáticamente operaciones como:
+
+* corrección por blanco;
+* promediado de réplicas;
+* cálculo de desviaciones estándar;
+* cálculo del error estándar;
+* organización interna de las matrices.
+
+---
+
+## Paso 4. Calcular métricas
+
+```python
+experimento.calcular_todo()
+```
+
+Esta función calcula todas las métricas necesarias para el análisis posterior.
+
+---
+
+## Paso 5. Generar las gráficas
+
+```python
+experimento.graficar()
+```
+
+Las figuras pueden mostrarse en pantalla o almacenarse automáticamente en una carpeta.
+
+---
+
+## Paso 6. Generar el reporte
+
+```python
+experimento.generar_reporte(
+    carpeta="Resultados"
+)
+```
+
+Se crearán automáticamente:
+
+* archivos Excel;
+* archivos CSV;
+* reportes Word;
+* reportes HTML;
+* figuras;
+* tablas de resultados;
+* matrices procesadas.
+
+Todo el análisis queda almacenado en una única carpeta lista para su consulta o distribución.
+
+---
+
+## Flujo completo
+
+El siguiente ejemplo resume el flujo de trabajo más habitual:
+
+```python
+from odplate import *
+
+experimento = ExperimentoOD(
+    "configuracion_placa.json"
+)
+
+experimento.cargar_resultados(
+    ruta="Datos",
+    nombre_blanco="Blanco"
+)
+
+experimento.procesar()
+
+experimento.calcular_todo()
+
+experimento.graficar()
+
+experimento.generar_reporte(
+    carpeta="Resultados"
+)
+```
+
+Con únicamente estas instrucciones es posible analizar un experimento completo y generar automáticamente todos los productos derivados del análisis.
+
+
