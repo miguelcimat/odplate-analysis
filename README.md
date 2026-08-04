@@ -5124,7 +5124,7 @@ Centro de Investigación en Matemáticas (CIMAT), Unidad Monterrey
 
 Investigadoras e Investigadores por México — SECIHTI
 
-Correo electrónico: *(agregar dirección de contacto)*
+Correo electrónico: miguel.alvarez@cimat.mx
 
 GitHub:
 
@@ -5133,8 +5133,6 @@ https://github.com/miguelcimat
 ---
 
 # Agradecimientos
-
-El desarrollo de ODPlate ha sido posible gracias al trabajo de investigadores, estudiantes y colaboradores que han participado en la validación de la biblioteca y en el diseño de nuevas funcionalidades.
 
 Se agradece especialmente a todos los usuarios que han contribuido mediante sugerencias, pruebas y reportes de errores, los cuales han permitido mejorar continuamente la calidad y robustez del proyecto.
 
