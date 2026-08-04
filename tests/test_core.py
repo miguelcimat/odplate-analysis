@@ -101,5 +101,5 @@ def test_grafica_ranking_todos_incluye_control_en_tabla():
 
 def test_import_publico():
     import odplate
-    assert odplate.__version__ == "1.0.0"
+    assert odplate.__version__ == "1.0.4"
     assert callable(odplate.registrar_criterio)
