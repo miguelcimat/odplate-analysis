@@ -1,11 +1,146 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Callable
+from typing import Any, Callable, Mapping
 import matplotlib.pyplot as plt
 
 from ..series import extraer_serie, filtrar_catalogo
 from ..metrics.ranking import ranking, describir_criterio
+
+
+def _etiqueta_automatica(
+    item,
+    formato_leyenda: str | None = None,
+) -> str:
+    """
+    Construye la etiqueta predeterminada de una serie.
+
+    Parameters
+    ----------
+    item:
+        Serie o control que se va a graficar.
+
+    formato_leyenda:
+        Plantilla opcional. Puede utilizar:
+
+        - {id}
+        - {nombre}
+        - {tipo}
+        - {grupo}
+        - {aceite}
+        - {concentracion}
+        - {fila}
+        - {columnas}
+
+    Returns
+    -------
+    str
+        Etiqueta construida.
+    """
+
+    if formato_leyenda is None:
+        partes = [
+            getattr(item, "aceite", None),
+            getattr(item, "grupo", None),
+            getattr(item, "nombre", None),
+        ]
+
+        return " - ".join(
+            str(parte)
+            for parte in partes
+            if parte not in (None, "")
+        )
+
+    valores = {
+        "id": getattr(item, "id", ""),
+        "nombre": getattr(item, "nombre", ""),
+        "tipo": getattr(item, "tipo", ""),
+        "grupo": getattr(item, "grupo", ""),
+        "aceite": getattr(item, "aceite", ""),
+        "concentracion": getattr(
+            item,
+            "concentracion",
+            "",
+        ),
+        "fila": getattr(item, "fila", ""),
+        "columnas": ", ".join(
+            str(columna)
+            for columna in getattr(
+                item,
+                "columnas_originales",
+                (),
+            )
+        ),
+    }
+
+    try:
+        etiqueta = formato_leyenda.format(**valores)
+    except KeyError as error:
+        raise ValueError(
+            "El formato de leyenda contiene un campo desconocido: "
+            f"{error}. Campos permitidos: "
+            "{id}, {nombre}, {tipo}, {grupo}, {aceite}, "
+            "{concentracion}, {fila} y {columnas}."
+        ) from error
+
+    return etiqueta.strip(" -")
+
+
+def _resolver_etiqueta(
+    item,
+    leyendas: Mapping[str, Any] | Callable | None = None,
+    formato_leyenda: str | None = None,
+) -> str:
+    """
+    Resuelve la etiqueta que se mostrará en la figura.
+
+    ``leyendas`` puede ser:
+
+    - ``None``: usa la etiqueta automática.
+    - Un diccionario: busca primero por ID y después por nombre.
+    - Una función: recibe la serie y devuelve su etiqueta.
+
+    Si el valor asociado es ``None``, ``False`` o una cadena vacía,
+    la serie se dibuja, pero no aparece en la leyenda.
+    """
+
+    etiqueta_automatica = _etiqueta_automatica(
+        item,
+        formato_leyenda=formato_leyenda,
+    )
+
+    if leyendas is None:
+        return etiqueta_automatica
+
+    if callable(leyendas):
+        etiqueta = leyendas(item)
+
+    elif isinstance(leyendas, Mapping):
+        identificador = getattr(item, "id", None)
+        nombre = getattr(item, "nombre", None)
+
+        if identificador in leyendas:
+            etiqueta = leyendas[identificador]
+        elif nombre in leyendas:
+            etiqueta = leyendas[nombre]
+        else:
+            etiqueta = etiqueta_automatica
+
+    else:
+        raise TypeError(
+            "leyendas debe ser un diccionario, una función o None."
+        )
+
+    if etiqueta is None or etiqueta is False:
+        return "_nolegend_"
+
+    etiqueta = str(etiqueta).strip()
+
+    if not etiqueta:
+        return "_nolegend_"
+
+    return etiqueta
+
 
 
 def _dibujar(
@@ -18,23 +153,50 @@ def _dibujar(
     mostrar_banda,
     mostrar_error,
     etiqueta=None,
+    leyendas=None,
+    formato_leyenda=None,
 ):
+    """
+    Dibuja una serie y sus medidas de variabilidad.
+    """
+
     datos = extraer_serie(
-        matrices, item.como_dict(), submatriz, tiempos, normalizacion
+        matrices,
+        item.como_dict(),
+        submatriz,
+        tiempos,
+        normalizacion,
     )
-    label = etiqueta or (
-        f"{item.aceite or ''} - {item.grupo or ''} - {item.nombre}".strip(' -')
+
+    if etiqueta is None:
+        label = _resolver_etiqueta(
+            item,
+            leyendas=leyendas,
+            formato_leyenda=formato_leyenda,
+        )
+    else:
+        label = etiqueta
+
+    linea, = ax.plot(
+        datos["tiempo"],
+        datos["mean"],
+        marker="o",
+        label=label,
     )
-    linea, = ax.plot(datos["tiempo"], datos["mean"], marker="o", label=label)
 
     if mostrar_error == "std":
         error = datos["std"]
+
     elif mostrar_error == "sem":
         error = datos["sem"]
+
     elif mostrar_error in (None, "ninguno"):
         error = None
+
     else:
-        raise ValueError("mostrar_error debe ser 'std', 'sem' o None.")
+        raise ValueError(
+            "mostrar_error debe ser 'std', 'sem' o None."
+        )
 
     if mostrar_banda and error is not None:
         ax.fill_between(
@@ -42,8 +204,9 @@ def _dibujar(
             datos["mean"] - error,
             datos["mean"] + error,
             color=linea.get_color(),
-            alpha=.18,
+            alpha=0.18,
         )
+
     elif error is not None:
         ax.errorbar(
             datos["tiempo"],
@@ -150,10 +313,13 @@ def graficar(
     figsize=(11, 6),
     titulo=None,
     eje_y="OD corregida",
+    leyendas=None,
+    formato_leyenda=None,
+    mostrar_leyenda=True,
+    leyenda_kwargs=None,
     guardar_en=None,
     mostrar=True,
-):
-    """
+):    """
     Grafica series con selección completamente controlada por el usuario.
 
     Modos
@@ -193,6 +359,7 @@ def graficar(
             )
     criterio = criterio or funcion_calificacion
     criterio_kwargs = dict(criterio_kwargs or {})
+    leyenda_kwargs = dict(leyenda_kwargs or {})
 
     tabla_ranking = None
     if modo in {"mejores", "peores", "ranking"}:
@@ -260,20 +427,63 @@ def graficar(
         if mostrar_control:
             for control in controles:
                 _dibujar(
-                    ax, matrices, control, submatriz, tiempos,
-                    normalizacion, mostrar_banda, mostrar_error,
-                    control.nombre,
+                    ax=ax,
+                    matrices=matrices,
+                    item=control,
+                    submatriz=submatriz,
+                    tiempos=tiempos,
+                    normalizacion=normalizacion,
+                    mostrar_banda=mostrar_banda,
+                    mostrar_error=mostrar_error,
+                    leyendas=leyendas,
+                    formato_leyenda=formato_leyenda,
                 )
         for item in seleccion:
             _dibujar(
-                ax, matrices, item, submatriz, tiempos,
-                normalizacion, mostrar_banda, mostrar_error,
+                ax=ax,
+                matrices=matrices,
+                item=item,
+                submatriz=submatriz,
+                tiempos=tiempos,
+                normalizacion=normalizacion,
+                mostrar_banda=mostrar_banda,
+                mostrar_error=mostrar_error,
+                leyendas=leyendas,
+                formato_leyenda=formato_leyenda,
             )
 
         ax.set(title=nombre, xlabel="Tiempo", ylabel=eje_y)
         ax.grid(alpha=.25)
-        if seleccion or (mostrar_control and controles):
-            ax.legend()
+        if (
+            mostrar_leyenda
+            and (
+                seleccion
+                or (
+                    mostrar_control
+                    and controles
+                )
+            )
+        ):
+            handles, labels = ax.get_legend_handles_labels()
+
+            elementos = [
+                (handle, label)
+                for handle, label in zip(
+                    handles,
+                    labels,
+                )
+                if label
+                and not label.startswith("_")
+            ]
+
+            if elementos:
+                handles, labels = zip(*elementos)
+
+                ax.legend(
+                    handles,
+                    labels,
+                    **leyenda_kwargs,
+                )
         fig.tight_layout()
         figuras.append(fig)
 
