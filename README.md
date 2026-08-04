@@ -1,71 +1,157 @@
-# ODPlate Analysis 1.0.4
+# ODPlate
 
-Biblioteca extensible para procesamiento, análisis, ranking, visualización y reporte de experimentos de densidad óptica en microplacas.
+<p align="center">
 
-## Instalación en Google Colab
+# 📊 ODPlate
 
-```python
-!unzip -q odplate_analysis.zip -d /content/odplate_analysis
-!pip install -e "/content/odplate_analysis[all]"
+### Una biblioteca de Python para el análisis integral de experimentos de densidad óptica (OD) en microplacas
 
-from odplate import ExperimentoOD, calificacion_inversa
+Diseño • Procesamiento • Modelado • Visualización • Reportes
+
+</p>
+
+---
+
+## ¿Qué es ODPlate?
+
+**ODPlate** es una biblioteca desarrollada en Python para facilitar el análisis completo de experimentos de densidad óptica (Optical Density, OD) realizados en microplacas.
+
+La biblioteca integra en un único flujo de trabajo todas las etapas habituales del análisis experimental:
+
+* Diseño interactivo de placas.
+* Lectura automática de archivos de absorbancia.
+* Organización de tratamientos y grupos experimentales.
+* Corrección por blanco.
+* Promediado automático de réplicas.
+* Cálculo de métricas biológicas y estadísticas.
+* Ajuste de modelos matemáticos.
+* Estimación de parámetros de crecimiento e inhibición.
+* Generación automática de gráficas.
+* Creación de reportes científicos listos para su análisis o publicación.
+
+El objetivo principal de ODPlate es eliminar la necesidad de realizar múltiples pasos manuales en hojas de cálculo y proporcionar un flujo de trabajo reproducible, automatizado y extensible.
+
+---
+
+# ¿Para quién está dirigida esta biblioteca?
+
+ODPlate fue diseñada para investigadores, estudiantes y profesionales que trabajan con experimentos basados en microplacas de densidad óptica.
+
+Entre las principales áreas de aplicación se encuentran:
+
+* Microbiología.
+* Biotecnología.
+* Farmacología.
+* Ciencias de alimentos.
+* Biología molecular.
+* Investigación de productos naturales.
+* Evaluación de actividad antimicrobiana.
+* Estudios de crecimiento microbiano.
+* Ensayos de susceptibilidad a antibióticos.
+* Cualquier experimento basado en mediciones de densidad óptica.
+
+Aunque originalmente fue desarrollada para experimentos microbiológicos, su arquitectura modular permite utilizarla en cualquier estudio basado en matrices de absorbancia.
+
+---
+
+# Características principales
+
+ODPlate proporciona un conjunto completo de herramientas para automatizar el análisis de experimentos de densidad óptica.
+
+Entre sus principales características se encuentran:
+
+* 🎨 Diseñador gráfico interactivo de placas.
+* 📥 Lectura automática de archivos Excel.
+* 🧪 Procesamiento de experimentos completos.
+* 🧼 Corrección automática por blanco.
+* 📊 Promediado de réplicas experimentales.
+* 📈 Cálculo de desviaciones estándar y errores estándar.
+* 🧬 Extracción automática de series experimentales.
+* 📉 Ajuste de múltiples modelos matemáticos de crecimiento.
+* 💊 Ajuste de curvas dosis–respuesta.
+* 🔬 Estimación automática de MIC aparente.
+* 🏆 Sistema flexible de ranking mediante criterios personalizables.
+* 📋 Exportación completa de matrices procesadas.
+* 📊 Generación de gráficas listas para publicación.
+* 📄 Reportes automáticos en múltiples formatos.
+* 🔌 Arquitectura extensible mediante plugins.
+
+---
+
+# ¿Qué puede hacer ODPlate?
+
+Una vez configurado un experimento, ODPlate puede realizar automáticamente tareas como:
+
+* Leer decenas o cientos de archivos Excel.
+* Detectar automáticamente el blanco experimental.
+* Promediar réplicas técnicas.
+* Calcular desviaciones estándar y errores estándar.
+* Extraer series de crecimiento para cada tratamiento.
+* Comparar tratamientos contra controles.
+* Ajustar modelos matemáticos.
+* Calcular métricas biológicas.
+* Clasificar tratamientos mediante criterios personalizados.
+* Generar tablas listas para análisis estadístico.
+* Exportar todas las matrices procesadas.
+* Crear figuras con barras o bandas de error.
+* Generar reportes completos en Excel, CSV, Word y HTML.
+
+Todo ello utilizando unas pocas líneas de código y manteniendo un flujo completamente reproducible.
+
+---
+
+# Filosofía del proyecto
+
+ODPlate fue desarrollada siguiendo cuatro principios fundamentales:
+
+## Reproducibilidad
+
+Cada resultado puede regenerarse a partir de los mismos datos y la misma configuración experimental.
+
+## Automatización
+
+Las tareas repetitivas deben ser realizadas por el software y no por el investigador.
+
+## Flexibilidad
+
+Cada laboratorio organiza sus experimentos de manera diferente. Por ello, la biblioteca permite adaptar el flujo de trabajo a distintos diseños experimentales sin modificar el código fuente.
+
+## Extensibilidad
+
+Nuevos modelos, métricas, criterios de ranking o métodos de visualización pueden incorporarse mediante el sistema de plugins sin alterar la arquitectura principal de la biblioteca.
+
+---
+
+# Flujo general de trabajo
+
+El flujo típico de un análisis con ODPlate se resume en el siguiente diagrama:
+
+```text
+Diseño de la placa
+        │
+        ▼
+Lectura de archivos Excel
+        │
+        ▼
+Procesamiento de matrices
+        │
+        ▼
+Extracción de series
+        │
+        ▼
+Cálculo de métricas
+        │
+        ▼
+Ajuste de modelos
+        │
+        ▼
+Ranking de tratamientos
+        │
+        ▼
+Generación de gráficas
+        │
+        ▼
+Exportación de reportes
 ```
 
-No es necesario modificar `sys.path`.
-
-## Ranking explícito
-
-```python
-exp.graficar(
-    modo="mejores",
-    n_mejores=5,
-    criterio=calificacion_inversa,
-    mostrar_control=True,
-)
-```
-
-También puede usarse el nombre registrado:
-
-```python
-exp.calcular_ranking(criterio="calificacion_inversa", n=5)
-```
-
-## Plugins
-
-```python
-from odplate import registrar_criterio
-
-@registrar_criterio(name="mi_criterio")
-def mi_criterio(matrices, serie, submatriz, tiempos=None):
-    return 0.0
-```
-
-Después puede utilizarse con `criterio="mi_criterio"`.
-
-## Estructura
-
-El código fuente usa el formato estándar `src/odplate/`, con subpaquetes para entrada/salida, procesamiento, métricas, modelos, gráficas, reportes, plugins y utilidades. Los imports históricos como `from odplate.processing import procesar_matrices` siguen funcionando.
-
-## Catálogo único de series (1.0)
-
-Los controles, tratamientos y referencias se almacenan en `configuracion["series"]`.
-Las configuraciones 0.x con `control`, `controles` y `grupos` se convierten automáticamente.
-
-```python
-ranking = experimento.calcular_ranking(
-    criterio="calificacion_inversa",
-    tipo="todos",              # tratamiento, control, todos o tipo personalizado
-)
-```
-
-```python
-experimento.graficar(
-    modo="ranking",
-    criterio="calificacion_inversa",
-    top=5,
-    tipo="todos",
-    mostrar_control=False,      # evita dibujar el control dos veces si ya está en el ranking
-)
-```
-
-El núcleo general está disponible como `Experimento`; `ExperimentoOD` se conserva como interfaz compatible.
+Cada una de estas etapas puede ejecutarse de forma independiente o integrarse dentro de un flujo completamente automatizado.
