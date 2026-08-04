@@ -319,27 +319,27 @@ def graficar(
     guardar_en=None,
     mostrar=True,
 ):    
-"""
-Grafica series con selección completamente controlada por el usuario.
-
-Modos
------
-grupos:
-    Una figura por grupo.
-todo:
-    Todas las series filtradas en una figura.
-seleccion:
-    Solo las series indicadas mediante filtros o IDs.
-ranking:
-    Selecciona ``top``, ``bottom`` o ``rango`` usando ``criterio``.
-mejores:
-    Alias compatible de ``ranking`` con ``top=n_mejores``.
-peores:
-    Alias de ``ranking`` con ``bottom`` o ``n_mejores``.
-
-No existe un criterio predeterminado: el usuario debe declarar qué
-significa "mejor" o "peor".
-"""
+    """
+    Grafica series con selección completamente controlada por el usuario.
+    
+    Modos
+    -----
+    grupos:
+        Una figura por grupo.
+    todo:
+        Todas las series filtradas en una figura.
+    seleccion:
+        Solo las series indicadas mediante filtros o IDs.
+    ranking:
+        Selecciona ``top``, ``bottom`` o ``rango`` usando ``criterio``.
+    mejores:
+        Alias compatible de ``ranking`` con ``top=n_mejores``.
+    peores:
+        Alias de ``ranking`` con ``bottom`` o ``n_mejores``.
+    
+    No existe un criterio predeterminado: el usuario debe declarar qué
+    significa "mejor" o "peor".
+    """
     submatriz = config["submatriz"]
     items = filtrar_catalogo(
         config, aceites, grupos, incluir_ids, excluir_ids, None, tipo=tipo
@@ -350,7 +350,7 @@ significa "mejor" o "peor".
         if x.es_control
         and (not controles_ids or x.id in set(controles_ids))
     ]
-
+    
     # Alias anterior conservado para no romper notebooks, sin imponer default.
     if criterio is not None and funcion_calificacion is not None:
         if criterio is not funcion_calificacion:
@@ -360,7 +360,7 @@ significa "mejor" o "peor".
     criterio = criterio or funcion_calificacion
     criterio_kwargs = dict(criterio_kwargs or {})
     leyenda_kwargs = dict(leyenda_kwargs or {})
-
+    
     tabla_ranking = None
     if modo in {"mejores", "peores", "ranking"}:
         if modo == "mejores":
@@ -377,7 +377,7 @@ significa "mejor" o "peor".
                     "En modo='peores' indique n_mejores o bottom."
                 )
             top = rango = None
-
+    
         seleccion, nombre, tabla_ranking = _seleccionar_por_ranking(
             config=config,
             matrices=matrices,
@@ -419,7 +419,7 @@ significa "mejor" o "peor".
             "modo debe ser 'grupos', 'todo', 'seleccion', 'ranking', "
             "'mejores' o 'peores'."
         )
-
+    
     rutas = []
     figuras = []
     for nombre, seleccion in conjuntos:
@@ -451,7 +451,7 @@ significa "mejor" o "peor".
                 leyendas=leyendas,
                 formato_leyenda=formato_leyenda,
             )
-
+    
         ax.set(title=nombre, xlabel="Tiempo", ylabel=eje_y)
         ax.grid(alpha=.25)
         if (
@@ -465,7 +465,7 @@ significa "mejor" o "peor".
             )
         ):
             handles, labels = ax.get_legend_handles_labels()
-
+    
             elementos = [
                 (handle, label)
                 for handle, label in zip(
@@ -475,10 +475,10 @@ significa "mejor" o "peor".
                 if label
                 and not label.startswith("_")
             ]
-
+    
             if elementos:
                 handles, labels = zip(*elementos)
-
+    
                 ax.legend(
                     handles,
                     labels,
@@ -486,7 +486,7 @@ significa "mejor" o "peor".
                 )
         fig.tight_layout()
         figuras.append(fig)
-
+    
         if guardar_en:
             carpeta = Path(guardar_en)
             carpeta.mkdir(parents=True, exist_ok=True)
@@ -498,14 +498,14 @@ significa "mejor" o "peor".
             plt.show()
         else:
             plt.close(fig)
-
+    
     metadatos = None
     if criterio is not None:
         metadatos = describir_criterio(
             criterio, mayor_es_mejor
         ).como_dict()
         metadatos["parametros"] = criterio_kwargs
-
+    
     return {
         "figuras": figuras,
         "rutas": rutas,
