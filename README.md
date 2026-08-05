@@ -5098,11 +5098,11 @@ También se recomienda citar la versión exacta utilizada durante el análisis.
 
 ```bibtex
 @software{AlvarezCarmona_ODPlate,
-  author = {Miguel Ángel Álvarez-Carmona},
+  author = {Miguel Á. Álvarez-Carmona},
   title = {ODPlate: A Python Library for Optical Density Plate Analysis},
   year = {2026},
   url = {https://github.com/miguelcimat/odplate-analysis},
-  version = {1.0.3}
+  version = {1.0.4}
 }
 ```
 
